@@ -1,18 +1,13 @@
-To facilitate OSGi bundle manifest generation, the archetype offers the choice of two maven plugins.
+# About
 
-a. SpringSource Bundlor Plugin 
-Home page: http://www.springsource.org/bundlor
+This is a fully backend incremental game. I made this just for portfolio and this is not meant to be a serious project.
 
-"SpringSource� Bundlor is a tool that automates the detection of dependencies and the creation of OSGi 
-manifest directives for JARs after their creation."
+## Usage
 
-The Bundlor tool is enabled by default.
+Run the program and use postman to "play".
 
-b. Apache Felix Bundle Plugin
-Home page: http://felix.apache.org/site/apache-felix-maven-bundle-plugin-bnd.html
+Current endpoints:
+   POST http://localhost:8080/player/create?name=test - create player with name
+   GET http://localhost:8080/player/info?name=test - get player info by name
+   POST http://localhost:8080/resource/generator/buy?playerName=test&generatorName=Wood Generator - build a generator with specific name for player with specific name
 
-"This plugin for Maven 2 is based on the BND tool from Peter Kriens. [...] The way you create a bundle 
-with BND is to tell it the content of the bundle's JAR file as a subset of the available classes."
-
-
-To trigger the manifest generation (using either plugin), run: mvn package
