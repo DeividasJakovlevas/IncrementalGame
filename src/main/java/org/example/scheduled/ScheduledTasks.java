@@ -1,6 +1,7 @@
 package org.example.scheduled;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,9 +21,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class ScheduledTasks {
 
-    private static final Logger log = LoggerFactory.getLogger(ScheduledTasks.class);
-
-
     private final PlayerService playerService;
     private final ResourceGeneratorService generatorService;
 
@@ -33,30 +31,29 @@ public class ScheduledTasks {
     @Scheduled(fixedRate = 5000)
     public void reportCurrentTime() {
         System.out.println("tick");
-        // Get all players
-        List<Player> players = playerService.getAllPlayers();
 
-        // Iterate over each player
+        List<Player> players = playerService.getAllPlayers();
+        List<PlayerResource> allResources = new ArrayList<>();
+
         for (Player player : players) {
-            // Get the player's generators
+
             List<ResourceGenerator> generators = player.getGenerators();
             Map<String,PlayerResource> resMap = player.getPlayerResources().stream().collect(Collectors.toMap(
-                    res -> res.getResourceType().getName(),           // Key mapping function
-                    res -> res  // Value mapping function
+                    res -> res.getResourceType().getName(),
+                    res -> res
             ));
 
             List<PlayerResource> resources = player.getPlayerResources();
-            resources.forEach(res->System.out.println(res.getResourceType().getName())); ;
-            // Increase player resources based on generator values
             for (ResourceGenerator generator : generators) {
                 ResourceType generatedResource = generator.getGeneratorType().getGeneratedResource();
                 double generatedAmount = generator.getGeneratorType().getGeneratedAmount() * generator.getLevel();
                 PlayerResource res = resMap.get(generatedResource.getName());
                 res.setAmount(res.getAmount() + generatedAmount);
-                //save to list and save playerResource
+                allResources.add(res);
                 System.out.println(res.getAmount());
             }
         }
+        playerService.savePlayerResources(allResources);
 
     }
 }
