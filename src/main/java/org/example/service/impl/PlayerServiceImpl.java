@@ -57,8 +57,12 @@ public class PlayerServiceImpl implements PlayerService {
             generators.add(generator);
         }
         player.setGenerators(generators);
-
         return playerRepo.save(player);
+    }
+
+    @Override
+    public List<Player> getAllPlayers() {
+        return playerRepo.findAll();
     }
 
 
@@ -83,5 +87,10 @@ public class PlayerServiceImpl implements PlayerService {
         dto.setGenerators(generatorDTOs);
 
         return dto;
+    }
+
+    @Override
+    public List<Player> findAllWithPlayerResources() {
+        return playerRepo.findAllWithPlayerResources();
     }
 }

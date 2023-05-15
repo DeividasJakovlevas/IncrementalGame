@@ -54,18 +54,20 @@ public class DataLoader implements CommandLineRunner {
     }
 
 
-    public List<ResourceGeneratorCost> generateBaseCostData(List<ResourceType> resourceTypes, List<ResourceGeneratorType> generatorTypes) {
-        List<ResourceGeneratorCost> costs = new ArrayList<>();
+    public List<List<ResourceGeneratorCost>> generateBaseCostData(List<ResourceType> resourceTypes, List<ResourceGeneratorType> generatorTypes) {
+        List<List<ResourceGeneratorCost>> costs = new ArrayList<>();
 
-        for (ResourceType resourceType : resourceTypes) {
-            for (ResourceGeneratorType generatorType : generatorTypes) {
+        for (ResourceGeneratorType generatorType : generatorTypes) {
+            List<ResourceGeneratorCost> generatorTypeCosts = new ArrayList<>();
+            for (ResourceType resourceType : resourceTypes) {
                 ResourceGeneratorCost cost = new ResourceGeneratorCost();
                 cost.setResourceType(resourceType);
                 cost.setGeneratorType(generatorType);
                 cost.setBasePrice(10.0);
                 cost.setPriceGrowth(1.1f);
-                costs.add(cost);
+                generatorTypeCosts.add(cost);
             }
+            costs.add(generatorTypeCosts);
         }
 
         return costs;
@@ -89,10 +91,20 @@ public class DataLoader implements CommandLineRunner {
     public void run(String... args) throws Exception {
         List<ResourceType> resourceTypes = generateBaseResourceTypeData();
         List<ResourceGeneratorType> resourceGenTypes = generateBaseGeneratorTypeData(resourceTypes);
-        List<ResourceGeneratorCost> resourceGenCosts = generateBaseCostData(resourceTypes,resourceGenTypes);
-        System.out.println("test1");
+        List<List<ResourceGeneratorCost>> resourceGenCosts = generateBaseCostData(resourceTypes,resourceGenTypes);
+
         resourceTypeRepository.saveAll(resourceTypes);
         resourceGeneratorTypeRepository.saveAll(resourceGenTypes);
-        resourceGeneratorCostRepository.saveAll(resourceGenCosts);
+
+        for (int i = 0; i < resourceGenTypes.size(); i++) {
+            ResourceGeneratorType generatorType = resourceGenTypes.get(i);
+            List<ResourceGeneratorCost> costs = resourceGenCosts.get(i);
+
+            resourceGeneratorCostRepository.saveAll(costs);
+            generatorType.setCosts(costs);
+        }
+
+        resourceGeneratorTypeRepository.saveAll(resourceGenTypes);
     }
+
 }

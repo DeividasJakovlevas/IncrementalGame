@@ -35,7 +35,6 @@ public class ResourceGeneratorServiceImpl implements ResourceGeneratorService {
         Player player = playerRepository.findByName(playerName);
         Optional<ResourceGenerator> generator = resourceGeneratorRepository.findByGeneratorType_Name(generatorTypeName);
         if(generator.isPresent()){
-
             return upgradeResourceGenerator(player,generator.get());
         }
 
@@ -54,6 +53,8 @@ public class ResourceGeneratorServiceImpl implements ResourceGeneratorService {
         return hasEnoughResources;
     }
     private boolean upgradeResourceGenerator(Player player, ResourceGenerator generator) {
+        System.out.println(generator.getGeneratorType().getCosts());
+
         boolean hasEnoughResources = checkPlayerResources(player, generator.getGeneratorType().getCosts(), generator.getLevel());
         if(hasEnoughResources){
             generator.setLevel(generator.getLevel()+1);
@@ -70,7 +71,7 @@ public class ResourceGeneratorServiceImpl implements ResourceGeneratorService {
         for (ResourceGeneratorCost cost : costs) {
             ResourceType resourceType = cost.getResourceType();
             double requiredAmount = cost.getBasePrice() * Math.pow(cost.getPriceGrowth(),level);
-
+            System.out.println(requiredAmount);
             PlayerResource playerResource = playerResourceRepository.findByPlayerAndResourceType(player, resourceType);
             if (playerResource == null || playerResource.getAmount() < requiredAmount) {
                 return false;
